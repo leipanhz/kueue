@@ -39,4 +39,7 @@ const (
 
 	// ProvReqAnnotationPrefix is the prefix for annotations that should be pass to ProvisioningRequest as Parameters.
 	ProvReqAnnotationPrefix = "provreq.kueue.x-k8s.io/"
+
+	// FIXME lppf: PrefetchPrefix
+	PrefetchAnnotationPrefix = "prefetch.kueue.x-k8s.io/"
 )

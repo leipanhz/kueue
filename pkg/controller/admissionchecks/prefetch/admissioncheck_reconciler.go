@@ -14,10 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package provisioning
+package prefetch
 
 import (
 	"context"
+
+	ctrl "sigs.k8s.io/controller-runtime"
 
 	apimeta "k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,14 +32,17 @@ import (
 
 type acReconciler struct {
 	client client.Client
-	helper *provisioningConfigHelper
+	helper *prefetchConfigHelper
 }
 
 var _ reconcile.Reconciler = (*acReconciler)(nil)
 
 func (a *acReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
+	log := ctrl.LoggerFrom(ctx)
+
 	ac := &kueue.AdmissionCheck{}
 	if err := a.client.Get(ctx, req.NamespacedName, ac); err != nil || ac.Spec.ControllerName != ControllerName {
+		log.V(2).Error(err, "Error in getting Admission check", "Controller Name", ControllerName, "ac.Spec.ControllerName", ac.Spec.ControllerName)
 		return reconcile.Result{}, client.IgnoreNotFound(err)
 	}
 

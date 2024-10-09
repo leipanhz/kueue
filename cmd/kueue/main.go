@@ -69,6 +69,8 @@ import (
 
 	// Ensure linking of the job controllers.
 	_ "sigs.k8s.io/kueue/pkg/controller/jobs"
+
+	"sigs.k8s.io/kueue/pkg/controller/admissionchecks/prefetch"
 )
 
 var (
@@ -260,6 +262,18 @@ func setupControllers(ctx context.Context, mgr ctrl.Manager, cCache *cache.Cache
 			setupLog.Error(err, "Could not setup MultiKueue controller")
 			os.Exit(1)
 		}
+	}
+
+	// lppf: set up controllers for prefetch addmissioncheck
+	ctrl, err := prefetch.NewController(mgr.GetClient(), mgr.GetEventRecorderFor("Kueue-prefetch-controller"))
+	if err != nil {
+		setupLog.Error(err, "Could not create prefetch controller")
+		os.Exit(1)
+	}
+
+	if err := ctrl.SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "Could not set up prefetch controller")
+		os.Exit(1)
 	}
 
 	if failedWebhook, err := webhooks.Setup(mgr); err != nil {

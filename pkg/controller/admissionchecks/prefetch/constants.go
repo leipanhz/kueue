@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package provisioning
+package prefetch
 
 const (
-	ConfigKind                       = "ProvisioningRequestConfig"
-	ControllerName                   = "kueue.x-k8s.io/provisioning-request"
-	DeprecatedConsumesAnnotationKey  = "cluster-autoscaler.kubernetes.io/consume-provisioning-request"
-	DeprecatedClassNameAnnotationKey = "cluster-autoscaler.kubernetes.io/provisioning-class-name"
-	ConsumesAnnotationKey            = "autoscaling.x-k8s.io/consume-provisioning-request"
-	ClassNameAnnotationKey           = "autoscaling.x-k8s.io/provisioning-class-name"
+	ConfigKind     = "PrefetchConfig"
+	ControllerName = "kueue.x-k8s.io/prefetch-request"
+	// DeprecatedConsumesAnnotationKey  = "cluster-autoscaler.kubernetes.io/consume-provisioning-request"
+	// DeprecatedClassNameAnnotationKey = "cluster-autoscaler.kubernetes.io/provisioning-class-name"
+	ConsumesAnnotationKey  = "autoscaling.x-k8s.io/consume-prefetch-request"
+	ClassNameAnnotationKey = "autoscaling.x-k8s.io/prefetch-class-name"
 
 	CheckInactiveMessage = "the check is not active"
-	NoRequestNeeded      = "the provisioning request is not needed"
+	NoRequestNeeded      = "the prefetch is not needed"
 )

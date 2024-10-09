@@ -156,6 +156,17 @@ func FilterProvReqAnnotations(annotations map[string]string) map[string]string {
 	return res
 }
 
+// FilterPrefetchReqAnnotations returns annotations containing the Prefetch Request annotation prefix.
+func FilterPrefetchReqAnnotations(annotations map[string]string) map[string]string {
+	res := make(map[string]string)
+	for k, v := range annotations {
+		if strings.HasPrefix(k, controllerconsts.PrefetchAnnotationPrefix) {
+			res[k] = v
+		}
+	}
+	return res
+}
+
 // NewAdmissionChecks aggregates AdmissionChecks from .spec.AdmissionChecks and .spec.AdmissionChecksStrategy
 func NewAdmissionChecks(cq *kueue.ClusterQueue) map[string]sets.Set[kueue.ResourceFlavorReference] {
 	var checks map[string]sets.Set[kueue.ResourceFlavorReference]

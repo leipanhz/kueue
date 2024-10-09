@@ -16,118 +16,118 @@ limitations under the License.
 
 package prefetch
 
-import (
-	"errors"
-	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
+// import (
+// 	"errors"
+// 	"fmt"
+// 	"regexp"
+// 	"strconv"
+// 	"strings"
 
-	"github.com/go-logr/logr"
-	apimeta "k8s.io/apimachinery/pkg/api/meta"
-	autoscaling "k8s.io/autoscaler/cluster-autoscaler/apis/provisioningrequest/autoscaling.x-k8s.io/v1beta1"
+// 	"github.com/go-logr/logr"
+// 	apimeta "k8s.io/apimachinery/pkg/api/meta"
+// 	autoscaling "k8s.io/autoscaler/cluster-autoscaler/apis/provisioningrequest/autoscaling.x-k8s.io/v1beta1"
 
-	kueue "sigs.k8s.io/kueue/apis/kueue/v1beta1"
-	"sigs.k8s.io/kueue/pkg/controller/constants"
-	"sigs.k8s.io/kueue/pkg/util/admissioncheck"
-)
+// 	kueue "sigs.k8s.io/kueue/apis/kueue/v1beta1"
+// 	"sigs.k8s.io/kueue/pkg/controller/constants"
+// 	"sigs.k8s.io/kueue/pkg/util/admissioncheck"
+// )
 
-func isPrefetched(pr *autoscaling.ProvisioningRequest) bool {
-	//Check if data is loaded to the storage cluster
-	// return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.Provisioned)
-}
+// func isPrefetched(pr *autoscaling.ProvisioningRequest) bool {
+// 	// Check if data is loaded to the storage cluster
+// 	// return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.Provisioned)
+// }
 
-func isAccepted(pr *autoscaling.ProvisioningRequest) bool {
-	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.Accepted)
-}
+// func isAccepted(pr *autoscaling.ProvisioningRequest) bool {
+// 	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.Accepted)
+// }
 
-func isFailed(pr *autoscaling.ProvisioningRequest) bool {
-	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.Failed)
-}
+// func isFailed(pr *autoscaling.ProvisioningRequest) bool {
+// 	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.Failed)
+// }
 
-func isBookingExpired(pr *autoscaling.ProvisioningRequest) bool {
-	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.BookingExpired)
-}
+// func isBookingExpired(pr *autoscaling.ProvisioningRequest) bool {
+// 	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.BookingExpired)
+// }
 
-func isCapacityRevoked(pr *autoscaling.ProvisioningRequest) bool {
-	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.CapacityRevoked)
-}
+// func isCapacityRevoked(pr *autoscaling.ProvisioningRequest) bool {
+// 	return apimeta.IsStatusConditionTrue(pr.Status.Conditions, autoscaling.CapacityRevoked)
+// }
 
-func ProvisioningRequestName(workloadName, checkName string, attempt int32) string {
-	fullName := fmt.Sprintf("%s-%s-%d", workloadName, checkName, int(attempt))
-	return limitObjectName(fullName)
-}
+// func ProvisioningRequestName(workloadName, checkName string, attempt int32) string {
+// 	fullName := fmt.Sprintf("%s-%s-%d", workloadName, checkName, int(attempt))
+// 	return limitObjectName(fullName)
+// }
 
-func getProvisioningRequestNamePrefix(workloadName, checkName string) string {
-	fullName := fmt.Sprintf("%s-%s-", workloadName, checkName)
-	return limitObjectName(fullName)
-}
+// func getProvisioningRequestNamePrefix(workloadName, checkName string) string {
+// 	fullName := fmt.Sprintf("%s-%s-", workloadName, checkName)
+// 	return limitObjectName(fullName)
+// }
 
-func getProvisioningRequestPodTemplateName(prName, podsetName string) string {
-	fullName := fmt.Sprintf("%s-%s-%s", podTemplatesPrefix, prName, podsetName)
-	return limitObjectName(fullName)
-}
+// func getProvisioningRequestPodTemplateName(prName, podsetName string) string {
+// 	fullName := fmt.Sprintf("%s-%s-%s", podTemplatesPrefix, prName, podsetName)
+// 	return limitObjectName(fullName)
+// }
 
-func matchesWorkloadAndCheck(pr *autoscaling.ProvisioningRequest, workloadName, checkName string) bool {
-	attemptRegex := getAttemptRegex(workloadName, checkName)
-	matches := attemptRegex.FindStringSubmatch(pr.Name)
-	return len(matches) > 0
-}
+// func matchesWorkloadAndCheck(pr *autoscaling.ProvisioningRequest, workloadName, checkName string) bool {
+// 	attemptRegex := getAttemptRegex(workloadName, checkName)
+// 	matches := attemptRegex.FindStringSubmatch(pr.Name)
+// 	return len(matches) > 0
+// }
 
-func getAttempt(log logr.Logger, pr *autoscaling.ProvisioningRequest, workloadName, checkName string) int32 {
-	attemptRegex := getAttemptRegex(workloadName, checkName)
-	matches := attemptRegex.FindStringSubmatch(pr.Name)
-	if len(matches) > 0 {
-		number, err := strconv.Atoi(matches[1])
-		if err != nil {
-			log.Error(err, "Parsing the attempt number from provisioning request", "requestName", pr.Name)
-			return 1
-		}
-		return int32(number)
-	}
-	log.Error(errors.New("no attempt suffix in provisioning request"), "No attempt suffix in provisioning request", "requestName", pr.Name)
-	return 1
-}
+// func getAttempt(log logr.Logger, pr *autoscaling.ProvisioningRequest, workloadName, checkName string) int32 {
+// 	attemptRegex := getAttemptRegex(workloadName, checkName)
+// 	matches := attemptRegex.FindStringSubmatch(pr.Name)
+// 	if len(matches) > 0 {
+// 		number, err := strconv.Atoi(matches[1])
+// 		if err != nil {
+// 			log.Error(err, "Parsing the attempt number from provisioning request", "requestName", pr.Name)
+// 			return 1
+// 		}
+// 		return int32(number)
+// 	}
+// 	log.Error(errors.New("no attempt suffix in provisioning request"), "No attempt suffix in provisioning request", "requestName", pr.Name)
+// 	return 1
+// }
 
-func getAttemptRegex(workloadName, checkName string) *regexp.Regexp {
-	prefix := getProvisioningRequestNamePrefix(workloadName, checkName)
-	escapedPrefix := regexp.QuoteMeta(prefix)
-	return regexp.MustCompile("^" + escapedPrefix + "([0-9]+)$")
-}
+// func getAttemptRegex(workloadName, checkName string) *regexp.Regexp {
+// 	prefix := getProvisioningRequestNamePrefix(workloadName, checkName)
+// 	escapedPrefix := regexp.QuoteMeta(prefix)
+// 	return regexp.MustCompile("^" + escapedPrefix + "([0-9]+)$")
+// }
 
-func parametersKueueToProvisioning(in map[string]kueue.Parameter) map[string]autoscaling.Parameter {
-	if in == nil {
-		return nil
-	}
+// func parametersKueueToProvisioning(in map[string]kueue.Parameter) map[string]autoscaling.Parameter {
+// 	if in == nil {
+// 		return nil
+// 	}
 
-	out := make(map[string]autoscaling.Parameter, len(in))
-	for k, v := range in {
-		out[k] = autoscaling.Parameter(v)
-	}
-	return out
-}
+// 	out := make(map[string]autoscaling.Parameter, len(in))
+// 	for k, v := range in {
+// 		out[k] = autoscaling.Parameter(v)
+// 	}
+// 	return out
+// }
 
-// provReqSyncedWithConfig checks if the provisioning request has the same provisioningClassName as the provisioning request config
-// and contains all the parameters from the config
-func provReqSyncedWithConfig(req *autoscaling.ProvisioningRequest, prc *kueue.ProvisioningRequestConfig) bool {
-	if req.Spec.ProvisioningClassName != prc.Spec.ProvisioningClassName {
-		return false
-	}
-	for k, vCfg := range prc.Spec.Parameters {
-		if vReq, found := req.Spec.Parameters[k]; !found || string(vReq) != string(vCfg) {
-			return false
-		}
-	}
-	return true
-}
+// // provReqSyncedWithConfig checks if the provisioning request has the same provisioningClassName as the provisioning request config
+// // and contains all the parameters from the config
+// func provReqSyncedWithConfig(req *autoscaling.ProvisioningRequest, prc *kueue.PrefetchConfig) bool {
+// 	if req.Spec.ProvisioningClassName != prc.Spec.ProvisioningClassName {
+// 		return false
+// 	}
+// 	for k, vCfg := range prc.Spec.Parameters {
+// 		if vReq, found := req.Spec.Parameters[k]; !found || string(vReq) != string(vCfg) {
+// 			return false
+// 		}
+// 	}
+// 	return true
+// }
 
-// passProvReqParams extracts from Workload's annotations ones that should be passed to ProvisioningRequest
-func passProvReqParams(wl *kueue.Workload, req *autoscaling.ProvisioningRequest) {
-	if req.Spec.Parameters == nil {
-		req.Spec.Parameters = make(map[string]autoscaling.Parameter, 0)
-	}
-	for annotation, val := range admissioncheck.FilterProvReqAnnotations(wl.Annotations) {
-		paramName := strings.TrimPrefix(annotation, constants.ProvReqAnnotationPrefix)
-		req.Spec.Parameters[paramName] = autoscaling.Parameter(val)
-	}
-}
+// // extracts from Workload's annotations ones that should be passed to PrefetchRequest
+// func passPrefetchReqParams(wl *kueue.Workload, req *autoscaling.ProvisioningRequest) {
+// 	if req.Spec.Parameters == nil {
+// 		req.Spec.Parameters = make(map[string]autoscaling.Parameter, 0)
+// 	}
+// 	for annotation, val := range admissioncheck.FilterPrefetchAnnotations(wl.Annotations) {
+// 		paramName := strings.TrimPrefix(annotation, constants.ProvReqAnnotationPrefix)
+// 		req.Spec.Parameters[paramName] = autoscaling.Parameter(val)
+// 	}
+// }
