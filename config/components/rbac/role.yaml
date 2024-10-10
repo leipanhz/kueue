@@ -332,14 +332,6 @@ rules:
 - apiGroups:
   - kueue.x-k8s.io
   resources:
-  - PrefetchRequests
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - kueue.x-k8s.io
-  resources:
   - admissionchecks
   verbs:
   - create
@@ -439,6 +431,24 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - kueue.x-k8s.io
+  resources:
+  - prefetchrequests
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - kueue.x-k8s.io
+  resources:
+  - prefetchrequests/status
+  verbs:
+  - get
 - apiGroups:
   - kueue.x-k8s.io
   resources:

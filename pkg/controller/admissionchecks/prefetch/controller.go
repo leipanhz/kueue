@@ -81,13 +81,13 @@ func WithMinBackoffSeconds(minBackoffSeconds int32) Option {
 	}
 }
 
-// FIXME: lppf
 // +kubebuilder:rbac:groups="",resources=events,verbs=create;watch;update
 // +kubebuilder:rbac:groups="",resources=podtemplates,verbs=get;list;watch;create;delete;update
 // +kubebuilder:rbac:groups=kueue.x-k8s.io,resources=workloads,verbs=get;list;watch;update;patch;delete
 // +kubebuilder:rbac:groups=kueue.x-k8s.io,resources=workloads/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=kueue.x-k8s.io,resources=admissionchecks,verbs=get;list;watch
-// +kubebuilder:rbac:groups=kueue.x-k8s.io,resources=PrefetchRequests,verbs=get;list;watch
+// +kubebuilder:rbac:groups=kueue.x-k8s.io,resources=prefetchrequests,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=kueue.x-k8s.io,resources=prefetchrequests/status,verbs=get
 
 func NewController(client client.Client, record record.EventRecorder, opts ...Option) (*Controller, error) {
 	helper, err := newPrefetchConfigHelper(client)
