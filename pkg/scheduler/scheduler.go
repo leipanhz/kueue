@@ -231,6 +231,15 @@ func (s *Scheduler) schedule(ctx context.Context) wait.SpeedSignal {
 	cycleCohortsSkipPreemption := sets.New[string]()
 	preemptedWorkloads := sets.New[string]()
 	skippedPreemptions := make(map[string]int)
+
+	// FIXME lp add:
+	log.V(2).Info("Kueue Scheduler.schedule(): Prefetch checking if data is loaded ")
+	// _, pferr := http.Get("https://snap.stanford.edu/data/amazon/Arts.txt.gz")
+	// if pferr != nil {
+	// 	log.V(2).Error(pferr, "Prefetch testing error")
+	// }
+	// FIXME lp end:
+
 	for i := range entries {
 		e := &entries[i]
 		mode := e.assignment.RepresentativeMode()
@@ -326,6 +335,7 @@ func (s *Scheduler) schedule(ctx context.Context) wait.SpeedSignal {
 			log.V(5).Info("Finished waiting for all admitted workloads to be in the PodsReady condition")
 		}
 		e.status = nominated
+
 		if err := s.admit(ctx, e, cq); err != nil {
 			e.inadmissibleMsg = fmt.Sprintf("Failed to admit workload: %v", err)
 		}

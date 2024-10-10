@@ -315,6 +315,15 @@ func (r *JobReconciler) ReconcileGenericJob(ctx context.Context, req ctrl.Reques
 	// 1. make sure there is only a single existing instance of the workload.
 	// If there's no workload exists and job is unsuspended, we'll stop it immediately.
 	wl, err := r.ensureOneWorkload(ctx, job, object)
+
+	// FIXME lp add:
+	log.V(2).Info("jobframework reconciler Prefetch checking: jobframework/reconciler workload")
+	// "annotation", fmt.Sprint(wl.Annotations),
+	// "labels", fmt.Sprint(wl.Labels),
+	// "spec", wl.Spec,
+	// "status", ' '.join(wl.Status.AdmissionChecks))
+	// FIXME lp end
+
 	if err != nil {
 		return ctrl.Result{}, err
 	}
